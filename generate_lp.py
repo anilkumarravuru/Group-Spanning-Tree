@@ -55,20 +55,6 @@ with open('float_variables.txt', 'w') as fvp:
 							fvp.write('f'+get_num(sr)+get_num(si)+get_num(i)+get_num(j)+'\n')
 							fvp.write('f'+get_num(sr)+get_num(si)+get_num(j)+get_num(i)+'\n')
 
-	# for f in range(1, group_count):
-	# 	for i in range(node_count-1):
-	# 		for j in range(i+1, node_count):
-	# 			if G_adv_list[i][j] > 0:
-	# 				f_vars += ['f'+get_num(0)+get_num(f)+get_num(i)+get_num(j), 'f'+get_num(0)+get_num(f)+get_num(j)+get_num(i)]
-	# 				fvp.write('f'+get_num(0)+get_num(f)+get_num(i)+get_num(j)+'\n')
-	# 				fvp.write('f'+get_num(0)+get_num(f)+get_num(j)+get_num(i)+'\n')
-	# for i in range(node_count-1):
-	# 	for j in range(i+1, node_count):
-	# 		if G_adv_list[i][j] > 0:
-	# 			f_vars += ['f'+get_num(1)+get_num(2)+get_num(i)+get_num(j), 'f'+get_num(1)+get_num(2)+get_num(j)+get_num(i)]
-	# 			fvp.write('f'+get_num(1)+get_num(2)+get_num(i)+get_num(j)+'\n')
-	# 			fvp.write('f'+get_num(1)+get_num(2)+get_num(j)+get_num(i)+'\n')
-
 final_constraints = []
 
 # Integral Constraints for vertices and Edges
@@ -105,12 +91,10 @@ for x in f_vars:
 for x in f_vars:
 	fro, to = x[-2*max_len: -max_len], x[-max_len:]
 	final_constraints.append('(1)({})+(-1)(x{}{}) <= 0'.format(x, min(fro, to), max(fro, to)))
-	# f_ed = ''.join(sorted(list(x[-2:])))
-	# final_constraints.append('(1)({})+(-1)(x{}) <= 0'.format(x, f_ed))
 
 # Actual flow constraints
 
-for source_group in range(2):
+for source_group in range(group_count):
 	for sink_group in range(source_group+1, group_count):
 		if source_group != sink_group:
 			for rest in range(group_count):
@@ -153,87 +137,6 @@ for source_group in range(2):
 						final_constraints.append(temp_flow_cnt + ' <= 0')
 						final_constraints.append(temp_flow_cnt + ' >= 0')
 
-# source_group = 0
-# for sink_group in range(1, group_count):
-# 	# source constraints
-# 	source_vertices = groups[source_group]
-# 	out_flow_vars, in_flow_vars = [], []
-# 	for ver in source_vertices:
-# 		for out_ver in out_edges[ver]:
-# 			if out_ver not in source_vertices:
-# 				out_flow_vars.append('f{}{}{}{}'.format(get_num(source_group), get_num(sink_group), get_num(ver), get_num(out_ver)))
-# 				in_flow_vars.append('f{}{}{}{}'.format(get_num(source_group), get_num(sink_group), get_num(out_ver), get_num(ver)))
-# 	temp_flow_cnt = '+'.join(list(map(lambda x: '(1)({})'.format(x), out_flow_vars)))
-# 	temp_flow_cnt += '+' + '+'.join(list(map(lambda x: '(-1)({})'.format(x), in_flow_vars)))
-# 	final_constraints.append(temp_flow_cnt + ' <= 1')
-# 	final_constraints.append(temp_flow_cnt + ' >= 1')
-# 	for rest in range(1, group_count):
-# 		if rest == sink_group:
-# 			# Sink constraints
-# 			sink_vertices = groups[sink_group]
-# 			out_flow_vars, in_flow_vars = [], []
-# 			for ver in sink_vertices:
-# 				for out_ver in out_edges[ver]:
-# 					if out_ver not in sink_vertices:
-# 						in_flow_vars.append('f{}{}{}{}'.format(get_num(source_group), get_num(sink_group), get_num(out_ver), get_num(ver)))
-# 						out_flow_vars.append('f{}{}{}{}'.format(get_num(source_group), get_num(sink_group), get_num(ver), get_num(out_ver)))
-# 			temp_flow_cnt = '+'.join(list(map(lambda x: '(1)({})'.format(x), in_flow_vars)))
-# 			temp_flow_cnt += '+' + '+'.join(list(map(lambda x: '(-1)({})'.format(x), out_flow_vars )))
-# 			final_constraints.append(temp_flow_cnt + ' <= 1')
-# 			final_constraints.append(temp_flow_cnt + ' >= 1')
-# 		else:
-# 			# Intermediate constraints
-# 			rest_vertices = groups[rest]
-# 			for ver in rest_vertices:
-# 				in_flow_vars, out_flow_vars = [], []
-# 				for out_ver in out_edges[ver]:
-# 					in_flow_vars.append('f{}{}{}{}'.format(get_num(source_group), get_num(sink_group), get_num(out_ver), get_num(ver)))
-# 					out_flow_vars.append('f{}{}{}{}'.format(get_num(source_group), get_num(sink_group), get_num(ver), get_num(out_ver)))
-# 				temp_flow_cnt = '+'.join(list(map(lambda x: '(1)({})'.format(x), in_flow_vars)))
-# 				temp_flow_cnt += '+' + '+'.join(list(map(lambda x: '(-1)({})'.format(x), out_flow_vars)))
-# 				final_constraints.append(temp_flow_cnt + ' <= 0')
-# 				final_constraints.append(temp_flow_cnt + ' >= 0')
-# source_group = 1
-# sink_group = 2
-# for rest in range(group_count):
-# 	if rest == source_group:
-# 		# Source constraints
-# 		source_vertices = groups[source_group]
-# 		out_flow_vars, in_flow_vars = [], []
-# 		for ver in source_vertices:
-# 			for out_ver in out_edges[ver]:
-# 				if out_ver not in source_vertices:
-# 					out_flow_vars.append('f{}{}{}{}'.format(get_num(source_group), get_num(sink_group), get_num(ver), get_num(out_ver)))
-# 					in_flow_vars.append('f{}{}{}{}'.format(get_num(source_group), get_num(sink_group), get_num(out_ver), get_num(ver)))
-# 		temp_flow_cnt = '+'.join(list(map(lambda x: '(1)({})'.format(x), out_flow_vars)))
-# 		temp_flow_cnt += '+' + '+'.join(list(map(lambda x: '(-1)({})'.format(x), in_flow_vars)))
-# 		final_constraints.append(temp_flow_cnt + ' <= 1')
-# 		final_constraints.append(temp_flow_cnt + ' >= 1')
-# 	elif rest == sink_group:
-# 		# Sink constraints
-# 		sink_vertices = groups[sink_group]
-# 		out_flow_vars, in_flow_vars = [], []
-# 		for ver in sink_vertices:
-# 			for out_ver in out_edges[ver]:
-# 				if out_ver not in sink_vertices:
-# 					in_flow_vars.append('f{}{}{}{}'.format(get_num(source_group), get_num(sink_group), get_num(out_ver), get_num(ver)))
-# 					out_flow_vars.append('f{}{}{}{}'.format(get_num(source_group), get_num(sink_group), get_num(ver), get_num(out_ver)))
-# 		temp_flow_cnt = '+'.join(list(map(lambda x: '(1)({})'.format(x), in_flow_vars)))
-# 		temp_flow_cnt += '+' + '+'.join(list(map(lambda x: '(-1)({})'.format(x), out_flow_vars )))
-# 		final_constraints.append(temp_flow_cnt + ' <= 1')
-# 		final_constraints.append(temp_flow_cnt + ' >= 1')
-# 	else:
-# 		# Intermediate constraints
-# 		rest_vertices = groups[rest]
-# 		for ver in rest_vertices:
-# 			in_flow_vars, out_flow_vars = [], []
-# 			for out_ver in out_edges[ver]:
-# 				in_flow_vars.append('f{}{}{}{}'.format(get_num(source_group), get_num(sink_group), get_num(out_ver), get_num(ver)))
-# 				out_flow_vars.append('f{}{}{}{}'.format(get_num(source_group), get_num(sink_group), get_num(ver), get_num(out_ver)))
-# 			temp_flow_cnt = '+'.join(list(map(lambda x: '(1)({})'.format(x), in_flow_vars)))
-# 			temp_flow_cnt += '+' + '+'.join(list(map(lambda x: '(-1)({})'.format(x), out_flow_vars)))
-# 			final_constraints.append(temp_flow_cnt + ' <= 0')
-# 			final_constraints.append(temp_flow_cnt + ' >= 0')
 
 with open('constraints.txt', 'w') as cp:
 	for cnt in final_constraints:
